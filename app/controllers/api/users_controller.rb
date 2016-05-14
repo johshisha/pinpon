@@ -20,6 +20,8 @@ module Api
         result = notblock(params)
       elsif command == "INQR" then
         result = inquire_result(params)
+      elsif command == "MKUR" then
+        result = make_user(params)
       end
       
       render json: result
@@ -114,6 +116,27 @@ module Api
       end
 
     end
+
+    def make_user(params)
+      name = params[0]
+      mail = params[1]
+      pass = params[2]
+      @UUID = params[3]
+      point = 0
+
+      if User.exists?(name: name)
+        return 0
+      end
+
+      @user = User.new(:name=>name,:mail=>mail,:pass=>pass,:UUID=>@UUID,:point=>point)
+
+      if @user.save
+        return 1
+      else
+        return -1
+      end
+    end
+
 
 
     def ranking
