@@ -5,9 +5,40 @@ module Api
     # GET /users
     # GET /users.json
 
-    def index
-      @users = User.all
-      render json: @users
+    def index()
+      ary = params[:params].split("_",2)
+      command = ary[0]
+      params = ary[1]
+      
+      if command == "ATK" then
+        result = attack(params)
+      elsif command == "ATKD" then
+        result = attacked(params)
+      elsif command == "BLKD" then
+        result = block(params)
+      elsif command == "NBLKD" then
+        result = notblock(params)
+      end
+      
+      render json: result
+
+
+    end
+
+    def attack(params)
+      return "attack"
+    end
+
+    def attacked(params)
+      
+    end
+
+    def block(params)
+      
+    end
+
+    def notblock(params)
+      
     end
 
     def ranking
