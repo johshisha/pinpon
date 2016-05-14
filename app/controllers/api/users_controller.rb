@@ -14,10 +14,12 @@ module Api
         result = attack(params)
       elsif command == "ATKD" then
         result = attacked(params)
-      elsif command == "BLKD" then
+      elsif command == "BLK" then
         result = block(params)
-      elsif command == "NBLKD" then
+      elsif command == "NBLK" then
         result = notblock(params)
+      elsif command == "INQR" then
+        result = inquire_request(params)
       end
       
       render json: result
@@ -54,8 +56,9 @@ module Api
 
     def attacked(params)
       @d_name = params[0]
-      @d_id = Attack.find_by(name: @d_name).id
-      if Attack.exists?(defender_id: @d_id) then
+      logger.info(@d_name)
+      @D = User.find_by(name: @d_name)
+      if Attack.exists?(defender_id: @D.id) then
         return 1
       else
         return 0
@@ -63,12 +66,52 @@ module Api
     end
 
     def block(params)
-      
+      @d_name = params[0]
+      @D = User.find_by(name: @d_name)
+      change_result(@D.id, 1)
     end
 
     def notblock(params)
-      
+      @d_name = params[0]
+      @D = User.find_by(name: @d_name)
+      change_result(@D.id, 2)
     end
+
+    def change_result(d_id, result)
+      @attack = Attack.find_by(defender_id: d_id)
+      @attack.result = result
+      @flag = @attack.save
+      if @flag == true then
+        return 1
+      else
+        return 0
+      end
+
+    end
+
+    def attack_destroy(d_id)
+      @attack = Attack.find_by(defender_id: d_id)
+      @result = @attack.result
+      @flag = @attack.destroy
+      if @flag == true then
+        return @result
+      else
+        return 0
+      end
+
+    end
+
+    def inquire_request(params)
+      @a_name = params[0]
+      @A = User.find_by(name: @a_name)
+      @result = attack_destroy(@A.id)
+      if @result == 0 then
+        @result = "atack check error"
+      end
+
+      return @result
+    end
+
 
     def ranking
       @users = User.order("point DESC")
