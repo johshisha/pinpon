@@ -9,7 +9,7 @@ module Api
       ary = params[:params].split("_")
       command = ary[0]
       params = ary[1,ary.length]
-      
+      logger.info(ary)
       if command == "ATK" then
         result = attack(params)
       elsif command == "ATKD" then
@@ -26,8 +26,13 @@ module Api
         result = ranking(params)
       elsif command == "GPNT" then
         result = get_point(params)
+      elsif command == "LS" then
+        result = check_UUID(params)
       end
       
+
+      logger.info("result")
+      logger.info(result)
       render json: result
     end
 
@@ -97,14 +102,7 @@ module Api
     def inquire_result(params)
       @a_name = params[0]
       @A = User.find_by(name: @a_name)
-
-      result = attack_destroy(@A.id)
-
-      return result
-    end
-
-    def attack_destroy(a_id)
-      @attack = Attack.find_by(attacker_id: a_id)
+      @attack = Attack.find_by(attacker_id: @A.id)
 
       if !@attack then
         return -1
@@ -113,12 +111,38 @@ module Api
       result = @attack.result
       if @attack.result == 0 then
         return 0
-      elsif @attack.destroy then
-        return result
       else
-        return -1
+        return result
+      end
+    end
+
+    def attack_destroy(user_id)
+      @attacker = Attack.find_by(attacker_id: user_id)
+      @defender = Attack.find_by(defender_id: user_id)
+
+      if @attacker then
+        @attacker.attacker_id = 0
+        @attacker.save
+        result = @attacker.result + 2
+
+        if @attacker.attacker_id == 0 && @attacker.defender_id == 0 then
+          @attacker.destroy
+        end
+
+      elsif @defender then
+        @defender.defender_id = 0
+        @defender.save
+        result = @defender.result
+
+        if @defender.attacker_id == 0 && @defender.defender_id == 0 then
+          @defender.destroy
+        end
+
+      else
+        result = -1
       end
 
+      return result
     end
 
     def make_user(params)
@@ -175,6 +199,8 @@ module Api
       cnt = 1
       for u in @users do
         if u.name == u_name then
+          result = attack_destroy(u.id)
+          update_point(u,result)
           return [cnt,u.name,u.point]
         end
         cnt += 1
@@ -188,6 +214,39 @@ module Api
       point = user.point
       return [name,point]
     end
+
+    def check_UUID(params)
+      @UUID = params[0]
+      @user = User.find_by(UUID: @UUID)
+
+      if !@user then
+        return 0
+      else
+        u_name = @user.name
+        cnt = 1
+        @users = User.order("point DESC")
+        for u in @users do
+          if u.name == u_name then
+            return [cnt,u.name,u.point]
+          end
+          cnt += 1
+        end
+      end
+    end
+
+    def update_point(user,result)
+      if result == 1 then
+        user.point += 5
+      elsif result == 2 then
+        user.point -= 5
+      elsif result == 3 then
+        user.point -= 15
+      elsif result == 4 then
+        user.point += 10
+      end
+      user.save
+    end
+
 
     # GET /users/1
     # GET /users/1.json
