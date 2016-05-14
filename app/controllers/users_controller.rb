@@ -7,6 +7,11 @@ class UsersController < ApplicationController
     @users = User.all
   end
 
+  def ranking
+    @users = User.order("point DESC")
+
+  end
+
   # GET /users/1
   # GET /users/1.json
   def show
@@ -69,6 +74,6 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:name, :mail, :pass, :UUID)
+      params.require(:user).permit(:name, :mail, :pass, :UUID, :point)
     end
 end
