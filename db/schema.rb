@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160514083825) do
+ActiveRecord::Schema.define(version: 20160514090929) do
 
   create_table "points", force: :cascade do |t|
     t.integer  "point"
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 20160514083825) do
     t.string   "UUID"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "point"
   end
 
 end
