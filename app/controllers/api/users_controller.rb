@@ -22,6 +22,10 @@ module Api
         result = inquire_result(params)
       elsif command == "MKUR" then
         result = make_user(params)
+      elsif command == "RANK" then
+        result = ranking(params)
+      elsif command == "GPNT" then
+        result = get_point(params)
       end
       
       render json: result
@@ -137,11 +141,52 @@ module Api
       end
     end
 
-
-
-    def ranking
+    def ranking(params)
+      u_name = params[0]
       @users = User.order("point DESC")
-      render json: @users
+
+      lists = []
+      flag = 0
+      cnt = 1
+      for u in @users do
+        l = user_shape(u)
+        l.insert(0,cnt)
+        if l.include?(u_name) then
+          flag = 1
+        end
+
+        if cnt >= 5 && flag == 1 then
+          lists.push(l)
+          break
+        elsif cnt <= 5 then
+          lists.push(l)
+        end
+
+        cnt += 1
+      end
+
+      return lists
+    end
+
+    def get_point(params)
+      u_name = params[0]
+      @users = User.order("point DESC")
+
+      cnt = 1
+      for u in @users do
+        if u.name == u_name then
+          return [cnt,u.name,u.point]
+        end
+        cnt += 1
+      end
+
+      return -1
+    end
+
+    def user_shape(user)
+      name = user.name 
+      point = user.point
+      return [name,point]
     end
 
     # GET /users/1
