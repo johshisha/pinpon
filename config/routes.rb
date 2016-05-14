@@ -1,16 +1,15 @@
 Rails.application.routes.draw do
   namespace :api, { format: 'json' } do
     resources :users
+    resources :attacks
   end
 
+  
+  resources :attacks
   resources :users do
     member do
       get 'ranking'
     end
-  
-    collection do
-      get 'api'
-    end 
   end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

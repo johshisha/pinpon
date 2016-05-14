@@ -4,14 +4,45 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
 
-  def index
-    @users = User.all
-    #render json: @users
+  def index()
+    ary = params[:params].split("_")
+    command = ary[0]
+    params = ary[1,ary.length]
+    
+    if command == "ATK" then
+      result = attack(params)
+    elsif command == "ATKD" then
+      result = attacked(params)
+    elsif command == "BLKD" then
+      result = block(params)
+    elsif command == "NBLKD" then
+      result = notblock(params)
+    end
+    
+    render json: result
+  end
+
+  def attack(params)
+    result = redirect_to :controller => "api/attacks", :action => "index"#, :id => @entry.id
+
+    return result
+  end
+
+  def attacked(params)
+    
+  end
+
+  def block(params)
+    
+  end
+
+  def notblock(params)
+    
   end
 
   def ranking
     @users = User.order("point DESC")
-
+    render json: @users
   end
 
   # GET /users/1
@@ -27,7 +58,6 @@ class UsersController < ApplicationController
   # GET /users/1/edit
   def edit
   end
-
 
   # POST /users
   # POST /users.json

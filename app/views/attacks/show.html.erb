@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Attacker:</strong>
+  <%= @attack.attacker_id %>
+</p>
+
+<p>
+  <strong>Defender:</strong>
+  <%= @attack.defender_id %>
+</p>
+
+<%= link_to 'Edit', edit_attack_path(@attack) %> |
+<%= link_to 'Back', attacks_path %>

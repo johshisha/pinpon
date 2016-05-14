@@ -6,9 +6,9 @@ module Api
     # GET /users.json
 
     def index()
-      ary = params[:params].split("_",2)
+      ary = params[:params].split("_")
       command = ary[0]
-      params = ary[1]
+      params = ary[1,ary.length]
       
       if command == "ATK" then
         result = attack(params)
@@ -21,16 +21,45 @@ module Api
       end
       
       render json: result
-
-
     end
 
     def attack(params)
-      return "attack"
+      logger.info(params)
+      @A_name = params[0]
+      @D_UUID = params[1]
+
+      @A = User.find_by(name: @A_name)
+      @D = User.find_by(UUID: @D_UUID) 
+
+      result = attack_create(@A.id, @D.id, 0)
+
+      return result
+    end
+
+    def attack_create(a_id,d_id,result)
+      #attackがされてないかどうか確かめる処理を書く
+      if Attack.exists?(attacker_id: a_id) || Attack.exists?(attacker_id: d_id) || Attack.exists?(defender_id: a_id) || Attack.exists?(defender_id: d_id) then
+        return 0
+      end
+
+      #攻撃されていないなら
+      @attack = Attack.new(:attacker_id=>a_id,:defender_id=>d_id,:result=>result)
+
+      if @attack.save
+        return 1
+      else
+        return 0
+      end
     end
 
     def attacked(params)
-      
+      @d_name = params[0]
+      @d_id = Attack.find_by(name: @d_name).id
+      if Attack.exists?(defender_id: @d_id) then
+        return 1
+      else
+        return 0
+      end
     end
 
     def block(params)

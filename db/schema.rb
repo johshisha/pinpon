@@ -11,7 +11,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160514090929) do
+ActiveRecord::Schema.define(version: 20160514115635) do
+
+  create_table "attacks", force: :cascade do |t|
+    t.integer  "attacker_id"
+    t.integer  "defender_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "result"
+  end
 
   create_table "points", force: :cascade do |t|
     t.integer  "point"
