@@ -3,8 +3,10 @@ class UsersController < ApplicationController
 
   # GET /users
   # GET /users.json
+
   def index
     @users = User.all
+    #render json: @users
   end
 
   def ranking
@@ -25,6 +27,7 @@ class UsersController < ApplicationController
   # GET /users/1/edit
   def edit
   end
+
 
   # POST /users
   # POST /users.json
