@@ -19,7 +19,7 @@ module Api
       elsif command == "NBLK" then
         result = notblock(params)
       elsif command == "INQR" then
-        result = inquire_request(params)
+        result = inquire_result(params)
       end
       
       render json: result
@@ -80,36 +80,39 @@ module Api
     def change_result(d_id, result)
       @attack = Attack.find_by(defender_id: d_id)
       @attack.result = result
-      @flag = @attack.save
-      if @flag == true then
+      if @attack.save then
         return 1
       else
-        return 0
+        return -1
       end
 
     end
 
-    def attack_destroy(d_id)
-      @attack = Attack.find_by(defender_id: d_id)
-      @result = @attack.result
-      @flag = @attack.destroy
-      if @flag == true then
-        return @result
-      else
-        return 0
-      end
-
-    end
-
-    def inquire_request(params)
+    def inquire_result(params)
       @a_name = params[0]
       @A = User.find_by(name: @a_name)
-      @result = attack_destroy(@A.id)
-      if @result == 0 then
-        @result = "atack check error"
+
+      result = attack_destroy(@A.id)
+
+      return result
+    end
+
+    def attack_destroy(a_id)
+      @attack = Attack.find_by(attacker_id: a_id)
+
+      if !@attack then
+        return -1
       end
 
-      return @result
+      result = @attack.result
+      if @attack.result == 0 then
+        return 0
+      elsif @attack.destroy then
+        return result
+      else
+        return -1
+      end
+
     end
 
 
